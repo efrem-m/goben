@@ -9,7 +9,7 @@ ENV METRICS_DIR="/opt/exporter"
 COPY 00-scripts/bandwidth.sh /opt/bandwidth.sh
 
 RUN apk add --no-cache bash && \
-    addgroup -S app && adduser -S app -G app && \
+    addgroup -S $USER && adduser -S $USER -G $USER && \
     wget https://github.com/udhos/goben/releases/download/$GOBEN_VERSION/goben_linux_amd64 -O $GOBEN_BIN && \
     chmod +x $GOBEN_BIN && \
     chmod +x /opt/bandwidth.sh && \
