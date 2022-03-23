@@ -9,7 +9,7 @@
 #   INTERVAL - (only if ROLE="client") for example "120" (by default "60"); number of seconds between checks
 
 INTERVAL="${INTERVAL:-60}"
-GOBEN_OUTPUT_FILE="/opt/report.txt"
+GOBEN_OUTPUT_FILE="/tmp/report.txt"
 
 METRICS_NAME="goben_speed_test"
 METRICS_PATH="$(echo $METRICS_DIR/index.html)"
