@@ -3,8 +3,8 @@ services:
     goben:
       build: .
       image: goben:local
-      ports:
-        - $SERVER:9045:9045
+      ports:                      # remove for client
+        - $SERVER:9045:9045       # remove for client
       environment:
         ROLE: $ROLE
         SERVER: $SERVER
