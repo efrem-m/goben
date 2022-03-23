@@ -24,12 +24,12 @@ if [ "$ROLE" = "client" ]; then
         echo "collect $FILE ..."
         sed -e 's/$ROLE/'"$ROLE"'/g' -e 's/$SERVER/'"$SERVER"'/g' -e 's/$CLIENT/'"$CLIENT"'/g' $FILE >> docker-compose.yaml
     done
-    sed -i '' '/remove for client/d' docker-compose.yaml
+    sed '/remove for client/d' docker-compose.yaml | tee docker-compose.yaml > /dev/null
     echo -e "Done, now you can just: docker-compose up -d"
 elif [ "$ROLE" = "server" ]; then
     echo "Generating a docker-compose.yaml for the $ROLE ..."
     sed -e 's/$ROLE/'"$ROLE"'/g' -e 's/$SERVER/'"$SERVER"'/g' -e 's/$CLIENT/'"$CLIENT"'/g' 10-files/00-goben.tpl >> docker-compose.yaml
-    sed -s '' '/remove for server/d' docker-compose.yaml
+    sed '/remove for server/d' docker-compose.yaml | tee docker-compose.yaml > /dev/null
     echo -e "Done, now you can just: docker-compose up -d"
 else
     echo "Check the \$ROLE variable. Can only be a \"server\" or a \"client\""
