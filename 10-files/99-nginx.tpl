@@ -3,7 +3,7 @@
     nginx:
       image: nginx:1.17.9
       ports:
-        - $SERVER:9095:80
+        - $CLIENT:9095:80
       restart: always
       logging:
         driver: "json-file"
