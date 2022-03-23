@@ -12,6 +12,6 @@
           max-file: "16"
       volumes:
         - static-content:/opt/exporter
-        - 10-files/nginx.conf:/etc/nginx/nginx.conf
+        - ./10-files/nginx.conf:/etc/nginx/nginx.conf
 volumes:
   static-content:

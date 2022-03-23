@@ -12,7 +12,7 @@ SERVER=${2}
 CLIENT=${3}
 
 if [[ -z $ROLE || -z $SERVER || -z $CLIENT ]]; then
-  echo -e 'One or more variables are undefined. For example:\n\n./start.sh server 10.10.10.12 10.10.10.11'
+  echo -e 'One or more variables are undefined. For example:\n\n./start.sh $ROLE $SERVER $CLIENT\n or\n./start.sh server 10.10.10.12 10.10.10.11'
   exit 1
 fi
 
@@ -24,11 +24,11 @@ if [ "$ROLE" = "server" ]; then
         echo "collect $FILE ..."
         sed -e 's/$ROLE/'"$ROLE"'/g' -e 's/$SERVER/'"$SERVER"'/g' -e 's/$CLIENT/'"$CLIENT"'/g' $FILE >> docker-compose.yaml
     done
-    echo "Done"
+    echo -e "Done, now you can just: docker-compose up -d"
 elif [ "$ROLE" = "client" ]; then
     echo "Generating a docker-compose.yaml for the $ROLE ..."
     sed -e 's/$ROLE/'"$ROLE"'/g' -e 's/$SERVER/'"$SERVER"'/g' -e 's/$CLIENT/'"$CLIENT"'/g' 10-files/00-goben.tpl >> docker-compose.yaml
-    echo "Done"
+    echo -e "Done, now you can just: docker-compose up -d"
 else
     echo "Check the \$ROLE variable. Can only be a \"server\" or a \"client\""
     exit 1
