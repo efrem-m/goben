@@ -1,20 +1,21 @@
 #!/bin/bash
 
 # Required variables:
-#   ROLE     - can be "server" or "client"; the measurement is performed from the client to the server
-#   SERVER   - for example "10.10.10.12"; server address
-#   CLIENT   - for example "10.10.10.11"; client address
+#   $ROLE     - can be "server" or "client"; the measurement is performed from the client to the server
+#   $SERVER   - for example "10.10.10.12"; server address
+#   $CLIENT   - for example "10.10.10.11"; client address
 
-# Optional variables
-#   INTERVAL - (only if ROLE="client") for example "120" (by default "60"); number of seconds between checks
+# Optional variables:
+#   $INTERVAL - (only if $ROLE="client") for example "120" (by default "60"); number of seconds between checks
+#   $PORT     - for example "5686" (by default "9037"); the port on which the server is listening
 
 INTERVAL="${INTERVAL:-60}"
-GOBEN_OUTPUT_FILE="/tmp/report.txt"
-GOBEN_PORT="9045"
+PORT="${PORT:-9037}"
+OUTPUT_FILE="/tmp/report.json"
 
-METRICS_NAME="goben_speed_test"
-METRICS_PATH="$(echo $METRICS_DIR/index.html)"
-METRICS_LABELS="reading writing"
+CHECK_NAME="iperf3_bandwidth"
+METRICS_PATH="/metrics/index.html"
+METRICS_LABELS="sent received"
 
 function log {
     timestamp=$(date "+%Y-%m-%d %H:%M:%S")
@@ -32,27 +33,28 @@ function log {
 
 function exporter {
     for LABEL in $METRICS_LABELS; do
-        CHECK_NAME="$(echo $METRICS_NAME{label=$LABEL, client_node=$CLIENT, server_node=$SERVER})"
-        CHECK_RESULT_MB=$(cat $GOBEN_OUTPUT_FILE | grep aggregate | grep $LABEL | awk '{print $5}')
-        log "$CHECK_NAME $CHECK_RESULT_MB"
-        grep -w "$CHECK_NAME" $METRICS_PATH > /dev/null
+        METRIC_NAME="$(echo $CHECK_NAME{label=$LABEL, client_node=$CLIENT, server_node=$SERVER})"
+        METRIC_VALUE=$(cat $OUTPUT_FILE | jq -r .end.sum_$LABEL.bits_per_second)
+        log "$METRIC_NAME $METRIC_VALUE"
+        grep -w "$METRIC_NAME" $METRICS_PATH > /dev/null
         if [[ $? -eq 0 ]] ; then
-            sed -i "s/$CHECK_NAME .*/$CHECK_NAME $CHECK_RESULT_MB/g" $METRICS_PATH
+            sed -i "s/$METRIC_NAME .*/$METRIC_NAME $METRIC_VALUE/g" $METRICS_PATH
         else
-            echo "$CHECK_NAME $CHECK_RESULT_MB" >> $METRICS_PATH
+            echo "$METRIC_NAME $METRIC_VALUE" >> $METRICS_PATH
         fi
     done
 }
 
-function goben_server {
-    log "Starting up the goben server on port $GOBEN_PORT"
-    $GOBEN_BIN -defaultPort ":$GOBEN_PORT"
+function iperf3_server {
+    log "Starting up the iperf3 server on port $PORT"
+    iperf3 --server --port $PORT --interval 2 --json | jq -r .end.sum_received.bits_per_second
 }
 
-function goben_client {
-    log "Starting up the goben client to test the speed up to $SERVER:$GOBEN_PORT with interval $INTERVAL"
+function iperf3_client {
+    log "Starting up the iperf3 client to test the speed up to $SERVER:$PORT with interval $INTERVAL"
     while true; do
-        $GOBEN_BIN -hosts $SERVER:$GOBEN_PORT -ascii=false -tls=false -reportInterval 2s -totalDuration 10s &> $GOBEN_OUTPUT_FILE;
+        echo > $OUTPUT_FILE
+        iperf3 --client $SERVER --port $PORT --interval 2 --time 6 --json --logfile $OUTPUT_FILE
         sleep $INTERVAL;
         exporter
     done
@@ -64,13 +66,12 @@ if [ -z "$ROLE" ]; then
 fi
 
 if [ "$ROLE" = "server" ]; then
-    log "Run goben in server mode"
-    goben_server
+    log "Run iperf3 in server mode"
+    iperf3_server
 elif [ "$ROLE" = "client" ]; then
-    log "Run goben in client mode"
-    goben_client
+    log "Run iperf3 in client mode"
+    iperf3_client
 else
-    e
     log "Check the \$ROLE variable. Can only be a \"server\" or a \"client\""
     exit 1
 fi
