@@ -47,7 +47,7 @@ function exporter {
 
 function iperf3_server {
     log "Starting up the iperf3 server on port $PORT"
-    iperf3 --server --port $PORT --interval 2 --json | jq -r .end.sum_received.bits_per_second
+    iperf3 --server --port $PORT --interval 2 --json &> /dev/null
 }
 
 function iperf3_client {
