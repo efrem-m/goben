@@ -33,10 +33,10 @@ function log {
 
 function exporter {
     for LABEL in $METRICS_LABELS; do
-        METRIC_NAME="$(echo $CHECK_NAME{label="$LABEL", client_node="$CLIENT", server_node="$SERVER"})"
+        METRIC_NAME="$(echo $CHECK_NAME{label=\"$LABEL\", client_node=\"$CLIENT\", server_node=\"$SERVER\"})"
         METRIC_VALUE=$(cat $OUTPUT_FILE | jq -r .end.sum_$LABEL.bits_per_second)
         log "$METRIC_NAME $METRIC_VALUE"
-        grep -w "$(echo $CHECK_NAME{label=\"$LABEL\", client_node=\"$CLIENT\", server_node=\"$SERVER\"})" $METRICS_PATH > /dev/null
+        grep -w "$METRIC_NAME" $METRICS_PATH > /dev/null
         if [[ $? -eq 0 ]] ; then
             sed -i "s/$METRIC_NAME .*/$METRIC_NAME $METRIC_VALUE/g" $METRICS_PATH
         else
