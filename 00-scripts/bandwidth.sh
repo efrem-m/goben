@@ -56,8 +56,8 @@ function iperf3_client {
     while true; do
         echo > $OUTPUT_FILE
         iperf3 --client $SERVER --port $PORT --interval 2 --time 6 --json --logfile $OUTPUT_FILE
-        sleep $INTERVAL;
         exporter
+        sleep $INTERVAL;
     done
 }
 
