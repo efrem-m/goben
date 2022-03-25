@@ -52,6 +52,7 @@ function iperf3_server {
 
 function iperf3_client {
     log "Starting up the iperf3 client to test the speed up to $SERVER:$PORT with interval $INTERVAL"
+    echo > $METRICS_PATH
     while true; do
         echo > $OUTPUT_FILE
         iperf3 --client $SERVER --port $PORT --interval 2 --time 6 --json --logfile $OUTPUT_FILE
