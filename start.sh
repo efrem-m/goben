@@ -36,12 +36,12 @@ if [ "$ROLE" = "client" ]; then
         sed -e 's/$ROLE/'"$ROLE"'/g' -e 's/$SERVER/'"$SERVER"'/g' -e 's/$CLIENT/'"$CLIENT"'/g' -e 's/$PORT/'"$PORT"'/g' -e 's/$EXPORTER_PORT/'"$EXPORTER_PORT"'/g' $FILE >> $TEMPFILE
     done
     sed '/remove for client/d' $TEMPFILE > docker-compose.yaml && rm $TEMPFILE
-    echo -e "Done, now you can just: docker-compose up -d"
+    echo -e "Done, now you can just:\n    docker-compose build\nand\n    docker-compose up -d"
 elif [ "$ROLE" = "server" ]; then
     echo "Generating a docker-compose.yaml for the $ROLE ..."
     sed -e 's/$ROLE/'"$ROLE"'/g' -e 's/$SERVER/'"$SERVER"'/g' -e 's/$CLIENT/'"$CLIENT"'/g' -e 's/$PORT/'"$PORT"'/g' -e 's/$EXPORTER_PORT/'"$EXPORTER_PORT"'/g' 10-files/00-iperf.tpl >> $TEMPFILE
     sed '/remove for server/d' $TEMPFILE > docker-compose.yaml && rm $TEMPFILE
-    echo -e "Done, now you can just: docker-compose up -d"
+    echo -e "Done, now you can just:\n    docker-compose build\nand\n    docker-compose up -d"
 else
     echo "Check the \$ROLE variable. Can only be a \"server\" or a \"client\""
     exit 1
