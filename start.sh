@@ -21,7 +21,7 @@ PORT="${4:-9037}"
 EXPORTER_PORT="${5:-9095}"
 
 if [[ -z $ROLE || -z $SERVER || -z $CLIENT ]]; then
-  echo -e 'One or more variables are undefined. Startup example:\n    ./start.sh $ROLE $SERVER $CLIENT $PORT $EXPORTER_PORT ($PORT and $EXPORTER_PORT- not required)\n or    \n./start.sh server 10.10.10.12 10.10.10.11'
+  echo -e 'One or more variables are undefined. Startup example:\n    ./start.sh $ROLE $SERVER $CLIENT $PORT $EXPORTER_PORT ($PORT and $EXPORTER_PORT- not required)\n or\n    ./start.sh server 10.10.10.12 10.10.10.11'
   exit 1
 fi
 
