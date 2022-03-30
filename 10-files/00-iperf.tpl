@@ -1,10 +1,10 @@
 version: '3.3'
 services:
-    goben:
+    iperf:
       build: .
-      image: goben:local
-      ports:                      # remove for client
-        - $SERVER:9045:9045       # remove for client
+      image: iperf:local
+      ports:                        # remove for client
+        - $SERVER:$PORT:$PORT       # remove for client
       environment:
         ROLE: $ROLE
         SERVER: $SERVER
